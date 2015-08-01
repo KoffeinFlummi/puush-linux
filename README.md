@@ -53,9 +53,9 @@ Below is a sample configuration for the i3 window manager:
 
 ```
 # Puush keybindings
-bindsym Ctrl+Shift+2    exec --no-startup-id puush -c -2
-bindsym Ctrl+Shift+3    exec --no-startup-id puush -c -3
-bindsym Ctrl+Shift+4    exec --no-startup-id puush -c -4
+bindsym Ctrl+Shift+2    exec --no-startup-id puush -c2
+bindsym Ctrl+Shift+3    exec --no-startup-id puush -c3
+bindsym Ctrl+Shift+4    exec --no-startup-id puush -c4
 ```
 
 

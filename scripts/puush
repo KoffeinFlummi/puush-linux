@@ -109,7 +109,15 @@ def main(args, optargs):
 
 if __name__ == "__main__":
     args = list(filter(lambda x: x[0] != "-", sys.argv[1:]))
-    optargs = list(filter(lambda x: x[0] == "-", sys.argv[1:]))
+    optargs = []
+    for a in sys.argv:
+        if a[0] != "-" or len(a) <= 1:
+            continue
+        if a[1] == "-":
+            optargs.append(a)
+            continue
+        for l in a[1:]:
+            optargs.append("-"+l)
 
     if "-h" in optargs or len(args) + len(optargs) == 0:
         usage()
