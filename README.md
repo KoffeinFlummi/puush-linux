@@ -31,8 +31,8 @@ You can either pass the key to Puush in the environment variable `PUUSH_API_KEY`
 puush for linux
 
 Usage:
-    puush [-c] [file]...
-    puush [-c] {-2 | -3 | -4}
+    puush [-c] [-m] [file]...
+    puush [-c] [-m] {-2 | -3 | -4}
     puush -h
 
 Options:
