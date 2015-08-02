@@ -60,7 +60,6 @@ def main(args, optargs):
             with open(os.path.expanduser("~/.config/puush/key"), "r") as f:
                 api_key = f.read().strip()
         except:
-            raise
             print("Failed to get api key. Please follow the instructions at https://github.com/KoffeinFlummi/puush-linux .", file=sys.stderr)
             return 1
 
