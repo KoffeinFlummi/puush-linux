@@ -1,4 +1,22 @@
 #!/usr/bin/env python3
+"""puush for linux
+
+Usage:
+    puush [-cmd] upload <file>...
+    puush [-cmd] (window | desktop | area)
+    puush -h | --help
+
+Commands:
+    window          Take a screenshot of the current window and upload it
+    desktop         Take a screenshot of the entire desktop and upload it
+    area            Take a screenshot of a certain area and upload it
+
+Options:
+    -c --clipboard  Copy the URL to clipboard additionally to STDOUT
+    -m --mute       Mute. Don't play beep.
+    -d --debug      Show debug messages.
+    -h --help       Show this help
+"""
 
 import os
 import re
@@ -6,24 +24,11 @@ import sys
 import subprocess as sp
 
 import requests
+import docopt
 
-USAGE = """puush for linux
 
-Usage:
-    puush [-c] [-m] [file]...
-    puush [-c] [-m] {-2 | -3 | -4}
-    puush -h
-
-Options:
-    -2      Take a screenshot of the current window and upload it
-    -3      Take a screenshot of the entire desktop and upload it
-    -4      Take a screenshot of a certain area and upload it
-    -c      Copy the URL to clipboard additionally to STDOUT
-    -m      Mute. Don't play beep.
-    -h      Show this help
-"""
-ARGS = ["-2", "-3", "-4", "-c", "-m", "-h"]
 APIURL = "https://puush.me/api/up"
+VERSION = "1.0"
 
 
 def usage():
@@ -52,7 +57,7 @@ def copy_to_clipboard(content):
     os.remove("/tmp/puushclip")
 
 
-def main(args, optargs):
+def main(args):
     if "PUUSH_API_KEY" in os.environ:
         api_key = os.environ["PUUSH_API_KEY"]
     else:
@@ -60,23 +65,27 @@ def main(args, optargs):
             with open(os.path.expanduser("~/.config/puush/key"), "r") as f:
                 api_key = f.read().strip()
         except:
+            if args["--debug"]:
+                raise
             print("Failed to get api key. Please follow the instructions at https://github.com/KoffeinFlummi/puush-linux .", file=sys.stderr)
             return 1
 
-    files = [os.path.abspath(x) for x in args]
+    files = args["<file>"]
 
     scrot_options = None
-    if "-2" in optargs:
+    if args["window"]:
         scrot_options = ["-b", "-u"]
-    if "-3" in optargs:
+    if args["desktop"]:
         scrot_options = []
-    if "-4" in optargs:
+    if args["area"]:
         scrot_options = ["-s"]
 
     if scrot_options is not None:
         try:
             sp.check_call(["scrot"] + scrot_options + ["/tmp/puushscrot.png"])
         except CalledProcessError:
+            if args["--debug"]:
+                raise
             print("Failed to take screenshot. Make sure scrot is installed and /tmp/puushscrot.png is writable.", file=sys.stderr)
             return 2
         files = ["/tmp/puushscrot.png"]
@@ -85,21 +94,28 @@ def main(args, optargs):
         try:
             url = upload_file(f, api_key)
         except:
+            if args["--debug"]:
+                raise
             print("Something went wrong while uploading your file.", file=sys.stderr)
             return 3
+
         print(url)
 
-        if "-c" in optargs:
+        if args["--clipboard"]:
             try:
                 copy_to_clipboard(url)
             except:
+                if args["--debug"]:
+                    raise
                 print("Failed to copy to clipboard. Make sure xclip is installed and /tmp/puushclip is writable.", file=sys.stderr)
                 return 4
 
-        if "-m" not in optargs:
+        if not args["--mute"]:
             try:
                 sp.call(["play", "--no-show-progress", "--null", "--channels", "1", "synth", "0.07", "sine", "500"], stdout=sp.PIPE, stderr=sp.PIPE)
             except:
+                if args["--debug"]:
+                    raise
                 pass
 
     if scrot_options is not None:
@@ -107,25 +123,6 @@ def main(args, optargs):
 
 
 if __name__ == "__main__":
-    args = list(filter(lambda x: x[0] != "-", sys.argv[1:]))
-    optargs = []
-    for a in sys.argv:
-        if a[0] != "-" or len(a) <= 1:
-            continue
-        if a[1] == "-":
-            optargs.append(a)
-            continue
-        for l in a[1:]:
-            optargs.append("-"+l)
-
-    if "-h" in optargs or len(args) + len(optargs) == 0:
-        usage()
-        sys.exit(0)
-
-    for a in optargs:
-        if a not in ARGS:
-            usage()
-            sys.exit(1)
-
-    sys.exit(main(args, optargs))
+    args = docopt.docopt(__doc__, version=VERSION)
+    sys.exit(main(args))
 

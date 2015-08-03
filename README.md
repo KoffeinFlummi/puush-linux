@@ -12,7 +12,6 @@ A Python 3 implementation of Puush for Linux.
 $ python3 setup.py install
 ```
 
-* Requires [curl](https://github.com/bagder/curl).
 * In order to take screenshots, you need [scrot](https://github.com/dreamer/scrot) installed and in your PATH.
 * In order to use the clipboard option, you need [xclip](http://sourceforge.net/projects/xclip/) (WARNING: sourceforge link) installed and in your PATH.
 * If you want to play the beep when the upload is finished, the `play` command has to be available. It is most likely found in the `sox` package of your respective package manager.
@@ -31,17 +30,20 @@ You can either pass the key to Puush in the environment variable `PUUSH_API_KEY`
 puush for linux
 
 Usage:
-    puush [-c] [-m] [file]...
-    puush [-c] [-m] {-2 | -3 | -4}
-    puush -h
+    puush [-cmd] upload <file>...
+    puush [-cmd] (window | desktop | area)
+    puush -h | --help
+
+Commands:
+    window          Take a screenshot of the current window and upload it
+    desktop         Take a screenshot of the entire desktop and upload it
+    area            Take a screenshot of a certain area and upload it
 
 Options:
-    -2      Take a screenshot of the current window and upload it
-    -3      Take a screenshot of the entire desktop and upload it
-    -4      Take a screenshot of a certain area and upload it
-    -c      Copy the URL to clipboard additionally to STDOUT
-    -m      Mute. Don't play beep.
-    -h      Show this help
+    -c --clipboard  Copy the URL to clipboard additionally to STDOUT
+    -m --mute       Mute. Don't play beep.
+    -d --debug      Show debug messages.
+    -h --help       Show this help
 ```
 
 
@@ -53,9 +55,9 @@ Below is a sample configuration for the i3 window manager:
 
 ```
 # Puush keybindings
-bindsym Ctrl+Shift+2    exec --no-startup-id puush -c2
-bindsym Ctrl+Shift+3    exec --no-startup-id puush -c3
-bindsym Ctrl+Shift+4    exec --no-startup-id puush -c4
+bindsym Ctrl+Shift+2    exec --no-startup-id puush -c window
+bindsym Ctrl+Shift+3    exec --no-startup-id puush -c desktop
+bindsym Ctrl+Shift+4    exec --no-startup-id puush -c area
 ```
 
 
