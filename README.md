@@ -35,6 +35,7 @@ Usage:
     puush -h | --help
 
 Commands:
+    upload          Upload the specified file(s)
     window          Take a screenshot of the current window and upload it
     desktop         Take a screenshot of the entire desktop and upload it
     area            Take a screenshot of a certain area and upload it
